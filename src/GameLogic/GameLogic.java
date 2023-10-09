@@ -93,11 +93,15 @@ public class GameLogic {
 								break;
 							}
 							case Event.RANDOM_DAMAGE:{
-								type = "получение урона в размере "+e.getDamage();
+								type = "получение урона в размере "+e.getDamageHeal();
 								break;
 							}
 							case Event.FREE_LOCATION:{
 								type = "свободная локация для прогулок";
+								break;
+							}
+							case Event.RANDOM_HEAL:{
+								type = "восстановление хп в размере "+e.getDamageHeal();
 								break;
 							}
 						}
@@ -200,6 +204,7 @@ public class GameLogic {
 					System.out.println(player.heal());
 					System.out.format("%s вас попытался(сь) поймать на ошибке и нанес(ла) - %d урона\n",e.getEnemy().type, damage);
 					player.hp -= damage;
+					if(player.hp <= 0) break;
 				}else if(answer == 4){
 					System.out.println(player.showStats());
 				}else {
@@ -207,10 +212,13 @@ public class GameLogic {
 				}
 			}
 			}else if(e.getType() == Event.RANDOM_DAMAGE) {
-				System.out.println(e.getDamageDescription());
-				player.hp-=e.getDamage();
+				System.out.println(e.getEventDescription());
+				player.hp-=e.getDamageHeal();
 			}else if(e.getType() == Event.FREE_LOCATION) {
 				System.out.println(e.getLocationDescription());
+			}else if(e.getType() == Event.RANDOM_HEAL) {
+				System.out.println(e.getEventDescription());
+				player.hp+=e.getDamageHeal();
 			}
 		if(player.isAlive()) return true;
 		else return false;

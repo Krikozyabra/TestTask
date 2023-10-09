@@ -15,6 +15,9 @@ public class Config {
 	
 	String[] freeLocations = {"Ты попал в тихий разбойнический лагерь. В нем еще тлеют угольки, видимо что-то их испугало..."};
 	
+	String[] healTypes = {"Костер", "Подушка"};
+	HashMap<String, HashMap<String, String>> healDescriptions = new HashMap<>();
+	
 	Config(){
 		//Setting descriptions for classes
 		playerDescriptions.put("Паладин", "Великий воин с большим щитом");
@@ -124,6 +127,16 @@ public class Config {
 			put("damage","3");
 			put("description", "Ты обнаружил ветхий, заброшенный колодец и решил,"
 					+ "\nчто будет круто справить туда свою нужду, но ты не учел того факта, что это освященный колодец. Ты получил божественную кару на 3 урона");
+		}});
+		
+		//Setting types of random heal
+		healDescriptions.put("Костер", new HashMap<String, String>(){{
+			put("heal","4");
+			put("description", "Вы нашли место, где друиды проводили инквизицию деревьев, и решили восстановить свои силы. Восстановление хп = 4");
+		}});
+		healDescriptions.put("Подушка", new HashMap<String, String>(){{
+			put("heal","5");
+			put("description", "С неба упала подушка и вы решили, что Боги хотят, чтобы вы отдохнули! Восстановление хп = 5");
 		}});
 	}
 }

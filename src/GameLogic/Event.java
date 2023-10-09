@@ -5,24 +5,24 @@ public class Event {
 	public final static int RANDOM_DAMAGE = 2;
 //	public static int SHOP = 3;
 	public final static int FREE_LOCATION = 4;
+	public final static int RANDOM_HEAL = 5;
 	
 	private int type = 0;
 	private Enemy enemy = null;
-	private int damage = 0;
-	private String damageDescription = null;
+	private int damageHeal = 0;
+	private String eventDescription = null;
 	private String locationDescription = null;
 	
-	Event(int type, int damage, String damageDescription){
+	Event(int type, int damageHeal, String eventDescription){
 		setType(type);
-		setDamage(damage);
-		setDamageDescription(damageDescription);
+		setDamageHeal(damageHeal);
+		setEventDescription(eventDescription);
 	}
 	
 	Event(int eventType, String locationDescription){
 		setType(eventType);
 		setLocationDescription(locationDescription);
 	}
-	
 	Event(int type, Enemy enemy){
 		setType(type);
 		setEnemy(enemy);
@@ -44,27 +44,27 @@ public class Event {
 		this.enemy = enemy;
 	}
 
-	public int getDamage() {
-		return damage;
-	}
-
-	public void setDamage(int damage) {
-		this.damage = damage;
-	}
-
-	public String getDamageDescription() {
-		return damageDescription;
-	}
-
-	public void setDamageDescription(String damageDescription) {
-		this.damageDescription = damageDescription;
-	}
-
 	public String getLocationDescription() {
 		return locationDescription;
 	}
 
 	public void setLocationDescription(String locationDescription) {
 		this.locationDescription = locationDescription;
+	}
+
+	public int getDamageHeal() {
+		return damageHeal;
+	}
+
+	public void setDamageHeal(int damageHeal) {
+		this.damageHeal = damageHeal;
+	}
+
+	public String getEventDescription() {
+		return eventDescription;
+	}
+
+	public void setEventDescription(String eventDescription) {
+		this.eventDescription = eventDescription;
 	}
 }
