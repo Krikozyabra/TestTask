@@ -40,7 +40,7 @@ public class Enemy extends Entity{
 				break;
 			}
 		}
-		if(isAttacking) return rnd.nextInt(this.maxDMG)+this.minDMG;
+		if(isAttacking) return rnd.nextInt(this.maxDMG-this.minDMG)+this.minDMG;
 		else return 0;
 	}
 
