@@ -166,7 +166,7 @@ public class GameLogic {
 		// TODO Auto-generated method stub
 		if(e.getType() == Event.ENEMY) {
 			System.out.println("О нет! На вас напал(а) - "+e.getEnemy().type);
-			System.out.println("Его(ё) статы:" + e.getEnemy().getStats());
+			System.out.println("Его(ё) статы:"+ e.getEnemy().getStats());
 			player.setFightingStatus(true);
 			while(player.inFight()) {
 				System.out.println("------------------------------------------------------------------------------------------------------------");
@@ -185,7 +185,7 @@ public class GameLogic {
 								System.out.println("Поздравляю вы напоролись на иголки острого ежа. Весь урон был возвращен вам с полна. Урон = "+damage);
 								if(player.hp <= 0) break;
 							}else {
-								System.out.println("Вы смогли маневрировать между иголками и ватщили этому ежу");
+								System.out.println("Вы смогли маневрировать между иголками и втащили этому ежу");
 								System.out.format("Вы смогли пробить %s и нанесли %d урона!\n",e.getEnemy().type,damage);
 								e.getEnemy().hp -= damage;
 								if(e.getEnemy().hp <= 0) {
@@ -224,6 +224,9 @@ public class GameLogic {
 						}
 					}
 				}else if(answer == 2) { //Attempting to run away
+					if(e.getEnemy().type == "Острый еж") {
+						System.out.println(Config.ANSI_RED+"От судьбы не убежишь"+Config.ANSI_RESET);
+					}else {
 					if((rnd.nextInt(100)+1)<=player.runAwayChance) {
 						System.out.format("А вы круты! Поступили по мужски и сбежали\n");
 						player.setFightingStatus(false);
@@ -233,6 +236,7 @@ public class GameLogic {
 						player.hp -= damage;
 						System.out.println("Вы получили - "+damage+" урона");
 						if(player.hp <= 0) break;
+					}
 					}
 				}else if(answer == 3) {
 					int damage = e.getEnemy().attack(player.protection);
