@@ -52,9 +52,11 @@ public class GameLogic {
 					break;
 				}else if(input==3) {
 					System.out.println(cfg.playerDescriptions.get(className));
+				}
 			}else if(input>10){
 				System.out.println("Такой команды не предусмотрено");
 			}else {
+				
 				if(input==1) {
 					id++;
 					if(id>4) id=0;
@@ -62,7 +64,6 @@ public class GameLogic {
 					id--;
 					if(id<0) id = 4;
 				}
-			}
 		}
 		}
 		logic();
