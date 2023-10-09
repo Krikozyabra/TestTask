@@ -10,7 +10,7 @@ public class Config {
 	String[] enemyTypes = {"Волк","Змея","Заяц убийца"};
 	HashMap<String, HashMap<String, Integer>> enemyStats = new HashMap<>();
 	
-	String[] damageTypes = {"Упало дерево", "Ударился мизинчиком об одуванчик"};
+	String[] damageTypes = {"Упало дерево", "Одуванчик", "Колодец"};
 	HashMap<String, HashMap<String, String>> damageDescriptions = new HashMap<>();
 	
 	String[] freeLocations = {"Ты попал в тихий разбойнический лагерь. В нем еще тлеют угольки, видимо что-то их испугало..."};
@@ -115,10 +115,15 @@ public class Config {
 			put("damage", "2");
 			put("description", "Ты не заметил старый дуб, проеденный короедами, и он упал тебе на темечко. Ты получил - 2 урона");
 		}});
-		damageDescriptions.put("Ударился мизинчиком об одуванчик", new HashMap<String, String>(){{
+		damageDescriptions.put("Одуванчик", new HashMap<String, String>(){{
 			put("damage","4");
 			put("description", "Кто-то явно воткнул этот железный одуванчик сюда специально, чтобы вы напоролись."
 					+ "\nВы получаете - 4 урона");
+		}});
+		damageDescriptions.put("Колодец", new HashMap<String, String>(){{
+			put("damage","3");
+			put("description", "Ты обнаружил ветхий, заброшенный колодец и решил,"
+					+ "\nчто будет круто справить туда свою нужду, но ты не учел того факта, что это освященный колодец. Ты получил божественную кару на 3 урона");
 		}});
 	}
 }
