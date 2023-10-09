@@ -171,11 +171,12 @@ public class GameLogic {
 				byte answer = scan.nextByte();
 				if(answer == 1) { //Attack attempt
 					int damage = player.attack(e.getEnemy().protection);
-					if(damage>0) {
-						if(e.getEnemy().type == "Острый еж") {
+					if(e.getEnemy().type == "Острый еж") {
+						if(damage > 0) {
 							if(e.getEzh().contrattack()) {
 								player.hp -= damage;
 								System.out.println("Поздравляю вы напоролись на иголки острого ежа. Весь урон был возвращен вам с полна. Урон = "+damage);
+								if(player.hp <= 0) break;
 							}else {
 								System.out.println("Вы смогли маневрировать между иголками и ватщили этому ежу");
 								System.out.format("Вы смогли пробить %s и нанесли %d урона!\n",e.getEnemy().type,damage);
@@ -188,7 +189,11 @@ public class GameLogic {
 								}
 								System.out.println("У вашего врага осталось "+e.getEnemy().hp+" здоровья");
 							}
-						}else{
+						}else {
+							System.out.println("Вы не смогли попасть по "+e.getEnemy().type);
+						}
+					}else {
+						if(damage > 0) {
 							System.out.format("Вы смогли пробить %s и нанесли %d урона!\n",e.getEnemy().type,damage);
 							e.getEnemy().hp -= damage;
 							if(e.getEnemy().hp <= 0) {
@@ -198,18 +203,18 @@ public class GameLogic {
 								break;
 							}
 							System.out.println("У вашего врага осталось "+e.getEnemy().hp+" здоровья");
-							damage = e.getEnemy().attack(player.protection);
-							if(damage>0) {
-								System.out.format("%s смог(ла) пробить вас и нанес(ла) %d урона!\n",e.getEnemy().type,damage);
-								player.hp -= damage;
-								System.out.format("У вас осталось %d из %d хп\n",player.hp,player.maxHP);
-								if(player.hp <= 0) break;
-							}else {
-								System.out.format("%s не смог(ла) попасть по вам\n",e.getEnemy().type);
-							}
+						}else {
+							System.out.println("Вы не смогли попасть по "+e.getEnemy().type);
 						}
-					}else {
-						System.out.println("Вы не смогли попасть по "+e.getEnemy().type);
+						damage = e.getEnemy().attack(player.protection);
+						if(damage>0) {
+							System.out.format("%s смог(ла) пробить вас и нанес(ла) %d урона!\n",e.getEnemy().type,damage);
+							player.hp -= damage;
+							System.out.format("У вас осталось %d из %d хп\n",player.hp,player.maxHP);
+							if(player.hp <= 0) break;
+						}else {
+							System.out.format("%s не смог(ла) попасть по вам\n",e.getEnemy().type);
+						}
 					}
 				}else if(answer == 2) { //Attempting to run away
 					if((rnd.nextInt(100)+1)<=player.runAwayChance) {
@@ -242,6 +247,7 @@ public class GameLogic {
 			}else if(e.getType() == Event.RANDOM_HEAL) {
 				System.out.println(e.getEventDescription());
 				player.hp+=e.getDamageHeal();
+				if(player.hp > player.maxHP) player.hp = player.maxHP;
 			}
 		if(player.isAlive()) return true;
 		else return false;
