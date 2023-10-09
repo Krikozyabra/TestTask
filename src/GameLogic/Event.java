@@ -9,6 +9,7 @@ public class Event {
 	
 	private int type = 0;
 	private Enemy enemy = null;
+	private Hedgehog ezh = null;
 	private int damageHeal = 0;
 	private String eventDescription = null;
 	private String locationDescription = null;
@@ -26,6 +27,11 @@ public class Event {
 	Event(int type, Enemy enemy){
 		setType(type);
 		setEnemy(enemy);
+	}
+	Event(int type, Enemy enemy, Hedgehog ezh){
+		setType(type);
+		setEnemy(enemy);
+		setEzh(ezh);
 	}
 
 	public int getType() {
@@ -66,5 +72,13 @@ public class Event {
 
 	public void setEventDescription(String eventDescription) {
 		this.eventDescription = eventDescription;
+	}
+
+	public Hedgehog getEzh() {
+		return ezh;
+	}
+
+	public void setEzh(Hedgehog ezh) {
+		this.ezh = ezh;
 	}
 }

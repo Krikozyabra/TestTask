@@ -7,7 +7,7 @@ public class Config {
 	HashMap<String, String> playerDescriptions = new HashMap<>();
 	HashMap<String, HashMap<String, Integer>> playerStats = new HashMap<>();
 	
-	String[] enemyTypes = {"Волк","Змея","Заяц убийца"};
+	String[] enemyTypes = {"Волк","Змея","Заяц убийца","Острый еж"};
 	HashMap<String, HashMap<String, Integer>> enemyStats = new HashMap<>();
 	
 	String[] damageTypes = {"Упало дерево", "Одуванчик", "Колодец"};
@@ -111,6 +111,13 @@ public class Config {
 			put("minDMG", 1);
 			put("maxDMG", 3);
 			put("hp", 12);
+			}});
+		playerStats.put("Острый еж", new HashMap<String, Integer>() {{
+			put("attack", 20);
+			put("protection", 18);
+			put("minDMG", 0);
+			put("maxDMG", 0);
+			put("hp", 15);
 			}});
 		
 		//Setting types of random damage

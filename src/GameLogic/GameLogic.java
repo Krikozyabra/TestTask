@@ -107,13 +107,18 @@ public class GameLogic {
 						}
 						System.out.println("Бог даровал жрецу возможность видеть, что на следующей клетке"
 								+ "\nОн говорит, что на следующей клетке будет "+type
-								+ "\nВы сходите(1) или восстановите чуть-чуть здоровья и сходите(2)?");
+								+ "\nВы сходите(1) или попытаться избежать(2)?");
 						answer = scan.nextByte();
 						if(answer == 1) {
 							if(!playEvent(e)) break life_cycle;
 						}else if(answer == 2) {
-							System.out.println(player.heal());
-							if(!playEvent(e)) break life_cycle;
+							int chance = rnd.nextInt(100)+1;
+							if(chance <= player.runAwayChance) {
+								player.addPosition(turn+1);
+								System.out.format("Вы смогли обойти надвигающуюся клетку и переместились на %d и оказались на клетке №%d\n",turn,player.getPosition());
+							}else {
+								if(!playEvent(e)) break life_cycle;
+							}
 						}else {
 							System.out.println("Такой команды не предусмотренно.");
 						}
@@ -167,26 +172,44 @@ public class GameLogic {
 				if(answer == 1) { //Attack attempt
 					int damage = player.attack(e.getEnemy().protection);
 					if(damage>0) {
-						System.out.format("Вы смогли пробить %s и нанесли %d урона!\n",e.getEnemy().type,damage);
-						e.getEnemy().hp -= damage;
-						if(e.getEnemy().hp <= 0) {
-							System.out.println("Вы победили своего врага! Поздравляем!");
-							e.getEnemy().died();
-							player.setFightingStatus(false);
-							break;
+						if(e.getEnemy().type == "Острый еж") {
+							if(e.getEzh().contrattack()) {
+								player.hp -= damage;
+								System.out.println("Поздравляю вы напоролись на иголки острого ежа. Весь урон был возвращен вам с полна. Урон = "+damage);
+							}else {
+								System.out.println("Вы смогли маневрировать между иголками и ватщили этому ежу");
+								System.out.format("Вы смогли пробить %s и нанесли %d урона!\n",e.getEnemy().type,damage);
+								e.getEnemy().hp -= damage;
+								if(e.getEnemy().hp <= 0) {
+									System.out.println("Вы победили своего врага! Поздравляем!");
+									e.getEnemy().died();
+									player.setFightingStatus(false);
+									break;
+								}
+								System.out.println("У вашего врага осталось "+e.getEnemy().hp+" здоровья");
+							}
+						}else{
+							System.out.format("Вы смогли пробить %s и нанесли %d урона!\n",e.getEnemy().type,damage);
+							e.getEnemy().hp -= damage;
+							if(e.getEnemy().hp <= 0) {
+								System.out.println("Вы победили своего врага! Поздравляем!");
+								e.getEnemy().died();
+								player.setFightingStatus(false);
+								break;
+							}
+							System.out.println("У вашего врага осталось "+e.getEnemy().hp+" здоровья");
+							damage = e.getEnemy().attack(player.protection);
+							if(damage>0) {
+								System.out.format("%s смог(ла) пробить вас и нанес(ла) %d урона!\n",e.getEnemy().type,damage);
+								player.hp -= damage;
+								System.out.format("У вас осталось %d из %d хп\n",player.hp,player.maxHP);
+								if(player.hp <= 0) break;
+							}else {
+								System.out.format("%s не смог(ла) попасть по вам\n",e.getEnemy().type);
+							}
 						}
-						System.out.println("У вашего врага осталось "+e.getEnemy().hp+" здоровья");
 					}else {
 						System.out.println("Вы не смогли попасть по "+e.getEnemy().type);
-					}
-					damage = e.getEnemy().attack(player.protection);
-					if(damage>0) {
-						System.out.format("%s смог(ла) пробить вас и нанес(ла) %d урона!\n",e.getEnemy().type,damage);
-						player.hp -= damage;
-						System.out.format("У вас осталось %d из %d хп\n",player.hp,player.maxHP);
-						if(player.hp <= 0) break;
-					}else {
-						System.out.format("%s не смог(ла) попасть по вам\n",e.getEnemy().type);
 					}
 				}else if(answer == 2) { //Attempting to run away
 					if((rnd.nextInt(100)+1)<=player.runAwayChance) {
