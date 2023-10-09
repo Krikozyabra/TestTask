@@ -16,8 +16,7 @@ public class GameLogic {
 			String className = cfg.playerTypes[id];
 			System.out.println("Выберите класс:");
 			System.out.println("Имя: "+className);
-			System.out.println("Описание: "+cfg.playerDescriptions.get(className)+"\n"+cfg.playerStats.get(className).toString());
-			System.out.println("1-Следующий класс, 2-Предыдущий класс, 3-Этот класс, 4~8-id Классов по списку");
+			System.out.println("1-Следующий класс\n2-Предыдущий класс\n3-Этот класс\n4-Посмотреть историю персонажа\n5~9-id Классов по списку");
 			byte input = scan.nextByte();
 			if(input==3) {
 				try {
@@ -29,13 +28,15 @@ public class GameLogic {
 				
 				System.out.println("Вы выбрали класс - "+className);
 				System.out.println("Вы можете выиграть 2 способами:"
-						+ "\n1) Дойти до клетки №100"
+						+ "\n1) Дойти до клетки №1000"
 						+ "\n2) Сыграть в ящик");
 				break;
-			}else if(input>3 && input<9){
+			}else if(input == 4) {
+				System.out.println(cfg.playerDescriptions.get(className));
+			}else if(input>4 && input<10){
 				className = cfg.playerTypes[input-4];
 				System.out.println("Вы уверены, что хотите выбрать класс - "+className);
-				System.out.println("1-Да, >2-Нет");
+				System.out.println("1-Да, 2-Нет, 3-Посмотреть историю");
 				input = scan.nextByte();
 				if(input==1) {
 					try {
@@ -46,11 +47,12 @@ public class GameLogic {
 					}
 					System.out.println("Вы выбрали класс - "+className);
 					System.out.println("Вы можете выиграть 2 способами:"
-							+ "\n1) Дойти до клетки №100"
+							+ "\n1) Дойти до клетки №1000"
 							+ "\n2) Сыграть в ящик");
 					break;
-				}
-			}else if(input>8){
+				}else if(input==3) {
+					System.out.println(cfg.playerDescriptions.get(className));
+			}else if(input>10){
 				System.out.println("Такой команды не предусмотрено");
 			}else {
 				if(input==1) {
@@ -61,6 +63,7 @@ public class GameLogic {
 					if(id<0) id = 4;
 				}
 			}
+		}
 		}
 		logic();
 	}
@@ -73,7 +76,7 @@ public class GameLogic {
 	public void logic() {
 		Event e = null;
 		life_cycle:
-		while(player.isAlive() || player.getPosition() < 100) {
+		while(player.isAlive()) {
 				System.out.println("------------------------------------------------------------------------------------------------------------");
 				System.out.format("Вы находитесь на %d клетке. Ваш следующий ход?\n"
 						+ "1-Кинуть кубик или сходить\n"
@@ -117,6 +120,8 @@ public class GameLogic {
 								player.addPosition(turn+1);
 								System.out.format("Вы смогли обойти надвигающуюся клетку и переместились на %d и оказались на клетке №%d\n",turn,player.getPosition());
 							}else {
+								System.out.println("Боги к вам не благосклонны и не дали миновать предопределленых событий");
+								player.addPosition(turn);
 								if(!playEvent(e)) break life_cycle;
 							}
 						}else {
@@ -149,6 +154,7 @@ public class GameLogic {
 					break;
 				}
 			}
+			if(player.getPosition()>=1000) break life_cycle;
 		}
 		if(!player.isAlive()) player.died();
 		else player.win();
