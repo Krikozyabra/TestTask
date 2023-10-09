@@ -7,6 +7,8 @@ public class Event {
 	public final static int FREE_LOCATION = 4;
 	public final static int RANDOM_HEAL = 5;
 	
+	private EventInterface eventInterface;
+	
 	private int type = 0;
 	private Enemy enemy = null;
 	private Hedgehog ezh = null;
@@ -14,24 +16,14 @@ public class Event {
 	private String eventDescription = null;
 	private String locationDescription = null;
 	
-	Event(int type, int damageHeal, String eventDescription){
+	Event(int type, EventInterface ei){
 		setType(type);
-		setDamageHeal(damageHeal);
-		setEventDescription(eventDescription);
+		setEventInterface(ei);
 	}
-	
-	Event(int eventType, String locationDescription){
-		setType(eventType);
-		setLocationDescription(locationDescription);
-	}
-	Event(int type, Enemy enemy){
+	Event(int type, Enemy e, Hedgehog ezh){
 		setType(type);
-		setEnemy(enemy);
-	}
-	Event(int type, Enemy enemy, Hedgehog ezh){
-		setType(type);
-		setEnemy(enemy);
-		setEzh(ezh);
+		setEnemy(e);
+		if(e.type == "Острый еж") setEzh(ezh);
 	}
 
 	public int getType() {
@@ -80,5 +72,13 @@ public class Event {
 
 	public void setEzh(Hedgehog ezh) {
 		this.ezh = ezh;
+	}
+
+	public EventInterface getEventInterface() {
+		return eventInterface;
+	}
+
+	public void setEventInterface(EventInterface eventInterface) {
+		this.eventInterface = eventInterface;
 	}
 }

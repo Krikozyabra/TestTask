@@ -3,20 +3,34 @@ package GameLogic;
 import java.util.HashMap;
 
 public class Config {
+	public static final String ANSI_RESET = "\u001B[0m";
+	public static final String ANSI_BLACK = "\u001B[30m";
+	public static final String ANSI_RED = "\u001B[31m";
+	public static final String ANSI_GREEN = "\u001B[32m";
+	public static final String ANSI_YELLOW = "\u001B[33m";
+	public static final String ANSI_BLUE = "\u001B[34m";
+	public static final String ANSI_PURPLE = "\u001B[35m";
+	public static final String ANSI_CYAN = "\u001B[36m";
+	public static final String ANSI_WHITE = "\u001B[37m";
+	
 	String[] playerTypes = {"Паладин", "Варвар", "Жрец", "Вор", "Мечник"};
 	HashMap<String, String> playerDescriptions = new HashMap<>();
 	HashMap<String, HashMap<String, Integer>> playerStats = new HashMap<>();
 	
 	String[] enemyTypes = {"Волк","Змея","Заяц убийца","Острый еж"};
+//	String[] enemyTypes = {"Острый еж"};
 	HashMap<String, HashMap<String, Integer>> enemyStats = new HashMap<>();
 	
 	String[] damageTypes = {"Упало дерево", "Одуванчик", "Колодец"};
 	HashMap<String, HashMap<String, String>> damageDescriptions = new HashMap<>();
+	HashMap<String, EventInterface> damageEvents = new HashMap<>();
 	
-	String[] freeLocations = {"Ты попал в тихий разбойнический лагерь. В нем еще тлеют угольки, видимо что-то их испугало..."};
+	String[] freeLocationsTypes = {"Лагерь"};
+	HashMap<String, EventInterface> freeLocationsEvents = new HashMap<>();
 	
 	String[] healTypes = {"Костер", "Подушка"};
 	HashMap<String, HashMap<String, String>> healDescriptions = new HashMap<>();
+	HashMap<String, EventInterface> healEvents = new HashMap<>();
 	
 	Config(){
 		//Setting descriptions for classes
@@ -124,7 +138,7 @@ public class Config {
 		//Setting types of random damage
 		damageDescriptions.put("Упало дерево", new HashMap<String, String>() {{
 			put("damage", "2");
-			put("description", "Ты не заметил старый дуб, проеденный короедами, и он упал тебе на темечко. Ты получил - 2 урона");
+			put("description", "Вы не заметили старый дуб, проеденный короедами, \nи он упал вам на темечко. Вы получил - 2 урона");
 		}});
 		damageDescriptions.put("Одуванчик", new HashMap<String, String>(){{
 			put("damage","4");
@@ -133,18 +147,72 @@ public class Config {
 		}});
 		damageDescriptions.put("Колодец", new HashMap<String, String>(){{
 			put("damage","3");
-			put("description", "Ты обнаружил ветхий, заброшенный колодец и решил,"
-					+ "\nчто будет круто справить туда свою нужду, но ты не учел того факта, что это освященный колодец. Ты получил божественную кару на 3 урона");
+			put("description", "Вы обнаружили ветхий, заброшенный колодец и решили,"
+					+ "\nчто будет круто справить туда свою нужду, но вы не учел того факта,\nчто это освященный колодец. Вы получили божественную кару на 3 урона");
 		}});
+		
+		damageEvents.put("Упало дерево", new EventInterface() {
+			@Override
+			public String execute(Player p) {
+				if(p.type == "Варвар") {
+					System.out.println("На вас упал старый дуб");
+					return "Варвар почесал голову... и пошел дальше";
+				}else {
+					p.hp -= Integer.parseInt(damageDescriptions.get("Упало дерево").get("damage"));
+					return damageDescriptions.get("Упало дерево").get("description");
+				}
+			}});
+		damageEvents.put("Одуванчик", new EventInterface() {
+			@Override
+			public String execute(Player p) {
+				p.hp -= Integer.parseInt(damageDescriptions.get("Одуванчик").get("damage"));
+				return damageDescriptions.get("Одуванчик").get("description");
+			}
+		});
+		damageEvents.put("Колодец", new EventInterface() {
+			@Override
+			public String execute(Player p) {
+				if(p.type == "Жрец") {
+					p.minDMG = p.maxDMG-1;
+					return "Боги Благоденствия приняли твою жертву и даровали атаковать почти на максимум. Твой урон стал "+p.minDMG+"-"+p.maxDMG;
+				}else {
+					p.hp -= Integer.parseInt(damageDescriptions.get("Колодец").get("damage"));
+					return damageDescriptions.get("Колодец").get("description");
+				}
+			}
+		});
+		
+		freeLocationsEvents.put("Лагерь", new EventInterface() {
+			@Override
+			public String execute(Player p) {
+				return "Ты попал в тихий разбойнический лагерь. В нем еще тлеют угольки, видимо что-то их испугало...";
+			}
+			
+		});
 		
 		//Setting types of random heal
 		healDescriptions.put("Костер", new HashMap<String, String>(){{
 			put("heal","4");
-			put("description", "Вы нашли место, где друиды проводили инквизицию деревьев, и решили восстановить свои силы. Восстановление хп = 4");
+			put("description", "Вы нашли место, где друиды проводили инквизицию деревьев-еретиков, \nи решили восстановить свои силы. Восстановление хп = 4");
 		}});
 		healDescriptions.put("Подушка", new HashMap<String, String>(){{
 			put("heal","5");
 			put("description", "С неба упала подушка и вы решили, что Боги хотят, чтобы вы отдохнули! Восстановление хп = 5");
 		}});
+		
+		healEvents.put("Костер", new EventInterface() {
+			@Override
+			public String execute(Player p) {
+				p.hp += Integer.parseInt(healDescriptions.get("Костер").get("heal"));
+				return healDescriptions.get("Костер").get("description");
+			}
+		});
+		healEvents.put("Подушка", new EventInterface() {
+			@Override
+			public String execute(Player p) {
+				p.hp += Integer.parseInt(healDescriptions.get("Подушка").get("heal"));
+				return healDescriptions.get("Подушка").get("description");
+			}
+		});
 	}
 }

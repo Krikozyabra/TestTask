@@ -52,6 +52,7 @@ public class GameLogic {
 					break;
 				}else if(input==3) {
 					System.out.println(cfg.playerDescriptions.get(className));
+				}
 			}else if(input>10){
 				System.out.println("Такой команды не предусмотрено");
 			}else {
@@ -63,7 +64,6 @@ public class GameLogic {
 					if(id<0) id = 4;
 				}
 			}
-		}
 		}
 		logic();
 	}
@@ -96,7 +96,7 @@ public class GameLogic {
 								break;
 							}
 							case Event.RANDOM_DAMAGE:{
-								type = "получение урона в размере "+e.getDamageHeal();
+								type = "получение урона";
 								break;
 							}
 							case Event.FREE_LOCATION:{
@@ -104,15 +104,16 @@ public class GameLogic {
 								break;
 							}
 							case Event.RANDOM_HEAL:{
-								type = "восстановление хп в размере "+e.getDamageHeal();
+								type = "восстановление хп";
 								break;
 							}
 						}
 						System.out.println("Бог даровал жрецу возможность видеть, что на следующей клетке"
-								+ "\nОн говорит, что на следующей клетке будет "+type
+								+ "\nОн говорит, что на следующей клетке будет "+Config.ANSI_YELLOW+type+Config.ANSI_RESET
 								+ "\nВы сходите(1) или попытаться избежать(2)?");
 						answer = scan.nextByte();
 						if(answer == 1) {
+							player.addPosition(turn);
 							if(!playEvent(e)) break life_cycle;
 						}else if(answer == 2) {
 							int chance = rnd.nextInt(100)+1;
@@ -144,11 +145,13 @@ public class GameLogic {
 					break;
 				}
 				case 2:{
-					System.out.println(player.showStats());
+					System.out.println(Config.ANSI_GREEN+player.showStats()+Config.ANSI_RESET);
 					break;
 				}
 				case 3:{
-					System.out.println(player.heal());				}
+					System.out.println(player.heal());	
+					break;
+				}
 				default:{
 					System.out.println("Такой команды не предусмотренно.");
 					break;
@@ -165,7 +168,7 @@ public class GameLogic {
 		// TODO Auto-generated method stub
 		if(e.getType() == Event.ENEMY) {
 			System.out.println("О нет! На вас напал(а) - "+e.getEnemy().type);
-			System.out.println("Его(ё) статы:" + e.getEnemy().getStats());
+			System.out.println("Его(ё) статы:" +Config.ANSI_RED+ e.getEnemy().getStats()+Config.ANSI_RESET);
 			player.setFightingStatus(true);
 			while(player.inFight()) {
 				System.out.println("------------------------------------------------------------------------------------------------------------");
@@ -223,6 +226,7 @@ public class GameLogic {
 						}
 					}
 				}else if(answer == 2) { //Attempting to run away
+					if(e.getEnemy().type != "Острый еж") {
 					if((rnd.nextInt(100)+1)<=player.runAwayChance) {
 						System.out.format("А вы круты! Поступили по мужски и сбежали\n");
 						player.setFightingStatus(false);
@@ -233,26 +237,28 @@ public class GameLogic {
 						System.out.println("Вы получили - "+damage+" урона");
 						if(player.hp <= 0) break;
 					}
+					}else {
+						System.out.println("Вы зациклены в пространстве у вас нет другого выхода...");
+					}
 				}else if(answer == 3) {
-					int damage = e.getEnemy().attack(player.protection);
-					System.out.println(player.heal());
-					System.out.format("%s вас попытался(сь) поймать на ошибке и нанес(ла) - %d урона\n",e.getEnemy().type, damage);
-					player.hp -= damage;
-					if(player.hp <= 0) break;
+					if(e.getEnemy().type == "Острый еж") {
+						System.out.println("Ай-ай-ай! На глазах бедного ежа вы кушаете восстанавливающий хлебец.\nКак вам не стыдно!");
+						if(player.hp <= 0) break;
+					}else {
+						int damage = e.getEnemy().attack(player.protection);
+						System.out.println(player.heal());
+						System.out.format("%s вас попытался(сь) поймать на ошибке и нанес(ла) - %d урона\n",e.getEnemy().type, damage);
+						player.hp -= damage;
+						if(player.hp <= 0) break;
+					}
 				}else if(answer == 4){
-					System.out.println(player.showStats());
+					System.out.println(Config.ANSI_GREEN+player.showStats()+Config.ANSI_RESET);
 				}else {
 					System.out.println("Такой команды бог-разработчик не придумал");
 				}
 			}
-			}else if(e.getType() == Event.RANDOM_DAMAGE) {
-				System.out.println(e.getEventDescription());
-				player.hp-=e.getDamageHeal();
-			}else if(e.getType() == Event.FREE_LOCATION) {
-				System.out.println(e.getLocationDescription());
-			}else if(e.getType() == Event.RANDOM_HEAL) {
-				System.out.println(e.getEventDescription());
-				player.hp+=e.getDamageHeal();
+			}else{
+				System.out.println(e.getEventInterface().execute(player));
 				if(player.hp > player.maxHP) player.hp = player.maxHP;
 			}
 		if(player.isAlive()) return true;

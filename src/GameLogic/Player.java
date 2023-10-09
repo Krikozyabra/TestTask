@@ -24,6 +24,7 @@ public class Player extends Entity{
 	void died() {
 		// TODO Auto-generated method stub
 		System.out.println("К сожалению вы умерли :(");
+		
 	}
 
 	@Override
@@ -97,12 +98,12 @@ public class Player extends Entity{
 	}
 
 	public Formatter showStats() {
-		return new Formatter().format("Здоровье = %d"
+		return new Formatter().format("Здоровье = %d/%d"
 				+ "\nУрон = %d-%d"
 				+ "\nЗащита = %d"
 				+ "\nАтака = %d"
 				+ "\nЗолото = %d"
-				,this.hp,this.minDMG,this.maxDMG,this.protection,this.attack, this.amountGold);
+				,this.hp,this.maxHP,this.minDMG,this.maxDMG,this.protection,this.attack, this.amountGold);
 	}
 
 	public void win() {
