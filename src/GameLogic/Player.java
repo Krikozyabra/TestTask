@@ -15,16 +15,22 @@ public class Player extends Entity{
 	int healAmount = 4;
 	int amountGold = 0;
 	int runAwayChance;
+	int respawnChance = 70;
+	int predictionChance = 100;
+	int turn=0;
 	String type;
 	
 	private int positionOnDesk = 0;
 	private boolean isFighting = false;
 
+	public boolean buff =false;
+
 	@Override
 	void died() {
 		// TODO Auto-generated method stub
+		GameLogic gl = new GameLogic();
 		System.out.println("К сожалению вы умерли :(");
-		
+		gl.gameStart();
 	}
 
 	@Override

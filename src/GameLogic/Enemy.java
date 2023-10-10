@@ -6,6 +6,7 @@ import java.util.Random;
 public class Enemy extends Entity{
 	
 	int minDMG, maxDMG;
+	int minGold, maxGold;
 	int protection;
 	int hp;
 	int attack;
@@ -46,7 +47,7 @@ public class Enemy extends Entity{
 
 	@Override
 	void setType(String typeName) throws Exception {
-		HashMap<String, Integer> stats = cfg.playerStats.get(typeName);
+		HashMap<String, Integer> stats = cfg.enemyStats.get(typeName);
 		this.type = typeName;
 		if(stats.get("attack")>30 || stats.get("protection")>30) {
 			throw new Exception();
@@ -56,13 +57,16 @@ public class Enemy extends Entity{
 		this.attack = stats.get("attack");
 		this.hp = stats.get("hp");
 		this.protection = stats.get("protection");
+		this.minGold = stats.get("minGold");
+		this.maxGold = stats.get("maxGold");
 	}
 
 	public String getStats() {
 		return "\n Урон = "+this.minDMG+"-"+this.maxDMG
 				+ "\n Здоровье = "+this.hp
 				+ "\n Атака = "+this.attack
-				+ "\n Защита = "+this.protection;
+				+ "\n Защита = "+this.protection
+				+ "\n Золото = "+this.minGold+"-"+this.maxGold;
 	}
 
 }

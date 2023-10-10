@@ -15,6 +15,7 @@ public class GameLogic {
 		choosing:
 		while(true) {
 			String className = cfg.playerTypes[id];
+			System.out.println("------------------------------------------------------------------------------------------------------------");
 			System.out.println("Выберите класс:");
 			System.out.println("Имя: "+className);
 			System.out.println("1-Следующий класс\n2-Предыдущий класс\n3-Этот класс\n4-Посмотреть историю персонажа\n5~9-id Классов по списку");
@@ -52,6 +53,7 @@ public class GameLogic {
 							+ "\n2) Сыграть в ящик");
 					break choosing;
 				}else if(input==3) {
+					System.out.println("------------------------------------------------------------------------------------------------------------");
 					System.out.println(cfg.playerDescriptions.get(className));
 				}
 			}else if(input>10){
@@ -88,23 +90,25 @@ public class GameLogic {
 				switch(answer) {
 				case 1:{
 					int turn = rnd.nextInt(6)+1;
+					if(player.buff) player.turn += 1;
+					if(turn%3 == 0 && player.type == "Паладин" && player.buff) {
+						System.out.println("Вы зарегенерировали 1 хп");
+						player.hp += 1;
+					}
 					System.out.println("На кубике выпало - "+turn);
 					e = eventCont.randomEvent();
 					if(player.type == "Жрец") {
 						if(!cfg.priestSpells.passive(e, player, turn)) {
 							if(!playEvent(e)) break life_cycle;
 						}
-						break turn;
 					}else if(player.type == "Варвар"){
 						cfg.barbarianSpells.passive(player, turn);
-						if(!playEvent(e)) break life_cycle;
-						break turn;
 					}else {
 						player.addPosition(turn);
 						System.out.format("Вы переместились на %d клеток и оказались на клетке %d\n",turn, player.getPosition());
-						if(!playEvent(e)) break life_cycle;
-						break turn;
 					}
+					if(player.type != "Жрец") if(!playEvent(e)) break life_cycle;
+					break turn;
 				}
 				case 2:{
 					System.out.println(Config.ANSI_GREEN+player.showStats()+Config.ANSI_RESET);
@@ -138,7 +142,8 @@ public class GameLogic {
 						+ "\n1 - Атаковать"
 						+ "\n2 - Бежать"
 						+ "\n3 - Захилиться (%d осталось)"
-						+ "\n4 - Посмотреть статы\n",player.healAmount);
+						+ "\n4 - Посмотреть свои статы"
+						+ "\n5 - Посмотреть описание противника\n",player.healAmount);
 				byte answer = scan.nextByte();
 				if(answer == 1) { //Attack attempt
 					int damage = player.attack(e.getEnemy().protection);
@@ -158,6 +163,9 @@ public class GameLogic {
 								e.getEnemy().hp -= damage;
 								if(e.getEnemy().hp <= 0) {
 									System.out.println("Вы победили своего врага! Поздравляем!");
+									int gold = rnd.nextInt(e.getEnemy().maxGold-e.getEnemy().minGold)+e.getEnemy().minGold;
+									System.out.format("Вам выпало %d золота", gold);
+									player.amountGold+=gold;
 									e.getEnemy().died();
 									player.setFightingStatus(false);
 									break;
@@ -240,6 +248,9 @@ public class GameLogic {
 					}
 				}else if(answer == 4){
 					System.out.println(Config.ANSI_GREEN+player.showStats()+Config.ANSI_RESET);
+				}else if(answer == 5){
+					System.out.println("------------------------------------------------------------------------------------------------------------");
+					System.out.println(cfg.enemyDescriptions.get(e.getEnemy().type));
 				}else {
 					System.out.println("Такой команды бог-разработчик не придумал");
 				}
