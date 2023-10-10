@@ -56,6 +56,7 @@ public class GameLogic {
 			}else if(input>10){
 				System.out.println("Такой команды не предусмотрено");
 			}else {
+				
 				if(input==1) {
 					id++;
 					if(id>4) id=0;
@@ -63,7 +64,6 @@ public class GameLogic {
 					id--;
 					if(id<0) id = 4;
 				}
-			}
 		}
 		logic();
 	}
@@ -129,7 +129,11 @@ public class GameLogic {
 		// TODO Auto-generated method stub
 		if(e.getEventType() == Event.ENEMY) {
 			System.out.println("О нет! На вас напал(а) - "+e.getEnemy().type);
+<<<<<<< HEAD
 			System.out.println("Его(ё) статы:" +Config.ANSI_RED+ e.getEnemy().getStats()+Config.ANSI_RESET);
+=======
+			System.out.println("Его(ё) статы:"+ e.getEnemy().getStats());
+>>>>>>> excplit
 			player.setFightingStatus(true);
 			while(player.inFight()) {
 				System.out.println("------------------------------------------------------------------------------------------------------------");
@@ -197,6 +201,7 @@ public class GameLogic {
 						}
 					}
 				}else if(answer == 2) { //Attempting to run away
+<<<<<<< HEAD
 					if(e.getEnemy().type != "Острый еж") {
 						if(player.type == "Паладин") {
 							System.out.println("Вы воин света, а воинам света не ведан страх.");
@@ -218,8 +223,17 @@ public class GameLogic {
 								}
 							}
 						}
+=======
+					if(e.getEnemy().type == "Острый еж") {
+						System.out.println(Config.ANSI_RED+"От судьбы не убежишь"+Config.ANSI_RESET);
+					}else {
+					if((rnd.nextInt(100)+1)<=player.runAwayChance) {
+						System.out.format("А вы круты! Поступили по мужски и сбежали\n");
+						player.setFightingStatus(false);
+>>>>>>> excplit
 					}else {
 						System.out.println("Вы зациклены в пространстве у вас нет другого выхода...");
+					}
 					}
 				}else if(answer == 3) {
 					if(e.getEnemy().type == "Острый еж") {
