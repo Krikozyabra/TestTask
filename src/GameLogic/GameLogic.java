@@ -166,7 +166,7 @@ public class GameLogic {
 								if(e.getEnemy().hp <= 0) {
 									System.out.println("Вы победили своего врага! Поздравляем!");
 									int gold = rnd.nextInt(e.getEnemy().maxGold-e.getEnemy().minGold)+e.getEnemy().minGold;
-									System.out.format("Вам выпало %d золота", gold);
+									System.out.format("Вам выпало %d золота\n", gold);
 									player.amountGold+=gold;
 									e.getEnemy().died();
 									player.setFightingStatus(false);
@@ -184,7 +184,7 @@ public class GameLogic {
 							if(e.getEnemy().hp <= 0) {
 								System.out.println("Вы победили своего врага! Поздравляем!");
 								int gold = rnd.nextInt(e.getEnemy().maxGold-e.getEnemy().minGold)+e.getEnemy().minGold;
-								System.out.format("Вам выпало %d золота", gold);
+								System.out.format("Вам выпало %d золота\n", gold);
 								player.amountGold+=gold;
 								e.getEnemy().died();
 								player.setFightingStatus(false);
