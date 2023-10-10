@@ -15,15 +15,15 @@ public class EventController {
 		}else if(chance <= 50) {
 			byte damageId = (byte) (rnd.nextInt(cfg.damageTypes.length)); //Choosing random damage's type
 			String damageType = cfg.damageTypes[damageId];
-			return new Event(Event.RANDOM_DAMAGE, cfg.damageEvents.get(damageType)); //Event - random damage
+			return new Event(Event.RANDOM_DAMAGE, cfg.damageEvents.get(damageType), cfg.damageDescriptions.get(damageType).get("description"), damageType); //Event - random damage
 		}else if(chance <= 75) {
 			byte freeLocationId = (byte)(rnd.nextInt(cfg.freeLocationsTypes.length));
 			String freeLocationType = cfg.freeLocationsTypes[freeLocationId];
-			return new Event(Event.FREE_LOCATION, cfg.freeLocationsEvents.get(freeLocationType));
+			return new Event(Event.FREE_LOCATION, cfg.freeLocationsEvents.get(freeLocationType), cfg.freeLocationDescriptions.get(freeLocationType), freeLocationType);
 		}else if(chance <= 100) {
 			byte healId = (byte) (rnd.nextInt(cfg.healTypes.length));
 			String healType = cfg.healTypes[healId];
-			return new Event(Event.RANDOM_HEAL, cfg.healEvents.get(healType));
+			return new Event(Event.RANDOM_HEAL, cfg.healEvents.get(healType), cfg.healDescriptions.get(healType).get("descriptions"), healType);
 		}
 		return null;
 	}

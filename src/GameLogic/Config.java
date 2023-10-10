@@ -1,6 +1,12 @@
 package GameLogic;
 
 import java.util.HashMap;
+import java.util.Random;
+import java.util.Scanner;
+
+import GameLogic.SpellsInterfaces.BarbarianInterface;
+import GameLogic.SpellsInterfaces.PaladinInterface;
+import GameLogic.SpellsInterfaces.PriestInterface;
 
 public class Config {
 	public static final String ANSI_RESET = "\u001B[0m";
@@ -17,15 +23,21 @@ public class Config {
 	HashMap<String, String> playerDescriptions = new HashMap<>();
 	HashMap<String, HashMap<String, Integer>> playerStats = new HashMap<>();
 	
+	PriestInterface priestSpells;
+	BarbarianInterface barbarianSpells;
+	PaladinInterface paladinSpells;
+	
 	String[] enemyTypes = {"Волк","Змея","Заяц убийца","Острый еж"};
 //	String[] enemyTypes = {"Острый еж"};
 	HashMap<String, HashMap<String, Integer>> enemyStats = new HashMap<>();
 	
 	String[] damageTypes = {"Упало дерево", "Одуванчик", "Колодец"};
+//	String[] damageTypes = {"Колодец"};
 	HashMap<String, HashMap<String, String>> damageDescriptions = new HashMap<>();
 	HashMap<String, EventInterface> damageEvents = new HashMap<>();
 	
 	String[] freeLocationsTypes = {"Лагерь"};
+	HashMap<String, String> freeLocationDescriptions = new HashMap<>();
 	HashMap<String, EventInterface> freeLocationsEvents = new HashMap<>();
 	
 	String[] healTypes = {"Костер", "Подушка"};
@@ -135,6 +147,91 @@ public class Config {
 			put("hp", 15);
 			}});
 		
+		priestSpells = new PriestInterface(){
+			@Override
+			public boolean passive(Event e, Player player, int turn) {
+				Scanner scan = new Scanner(System.in);
+				Random rnd = new Random();
+				String type = "";
+				switch(e.getEventType()) {
+					case Event.ENEMY:{
+						type = "враг - "+e.getEnemy().type;
+						break;
+					}
+					case Event.RANDOM_DAMAGE:{
+						if(e.getType() == "Колодец") {
+							type = "бафф";
+						}else {
+							type = "получение урона";
+						}
+						break;
+					}
+					case Event.FREE_LOCATION:{
+						type = "свободная локация для прогулок";
+						break;
+					}
+					case Event.RANDOM_HEAL:{
+						type = "восстановление хп";
+						break;
+					}
+				}
+				System.out.println("Бог даровал жрецу возможность видеть, что на следующей клетке"
+						+ "\nОн говорит, что на следующей клетке будет "+Config.ANSI_YELLOW+type+Config.ANSI_RESET
+						+ "\nВы сходите(1) или попытаетесь избежать(2)?");
+				while(true) {
+				byte answer = scan.nextByte();
+				if(answer == 1) {
+					player.addPosition(turn);
+					return false;
+				}else if(answer == 2) {
+					int chance = rnd.nextInt(100)+1;
+					if(chance <= player.runAwayChance) {
+						player.addPosition(turn+1);
+						System.out.format("Вы смогли обойти надвигающуюся клетку и переместились на %d и оказались на клетке №%d\n",turn,player.getPosition());
+						return true;
+					}else {
+						System.out.println("Боги к вам не благосклонны и не дали миновать предопределленых событий");
+						player.addPosition(turn);
+						return false;
+					}
+				}else {
+					System.out.println("Такой команды не предусмотренно.");
+				}
+				}
+			}
+		};
+		barbarianSpells = new BarbarianInterface() {
+
+			@Override
+			public void passive(Player player, int turn) {
+				Random rnd = new Random();
+				int turn2 = rnd.nextInt(6)+1;
+				turn2 = turn > turn2 ? turn : turn2;
+				System.out.format("Варвара часто преследуют умные мысли и иногда они его догонят."
+						+ "\nЭтот случай стал тем самым исключением и он перекинул кубик,"
+						+ "\nчтобы сходить на самое большое количество шагов - %d\n", turn2);
+				player.addPosition(turn2);
+				System.out.format("Вы переместились на %d и оказались на клетке %d\n",turn2,player.getPosition());
+			}
+			
+		};
+		paladinSpells = new PaladinInterface() {
+
+			@Override
+			public boolean passive(Player player) {
+				Random rnd = new Random();
+				if((rnd.nextInt(100)+1) <= 70) {
+					System.out.println("Боги дают тебе возрождение");
+					player.hp = 1;
+					return true;
+				}else {
+					System.out.println("Боги решили, что тебе и в земле нормально");
+					return false;
+				}
+			}
+			
+		};
+		
 		//Setting types of random damage
 		damageDescriptions.put("Упало дерево", new HashMap<String, String>() {{
 			put("damage", "2");
@@ -148,7 +245,7 @@ public class Config {
 		damageDescriptions.put("Колодец", new HashMap<String, String>(){{
 			put("damage","3");
 			put("description", "Вы обнаружили ветхий, заброшенный колодец и решили,"
-					+ "\nчто будет круто справить туда свою нужду, но вы не учел того факта,\nчто это освященный колодец. Вы получили божественную кару на 3 урона");
+					+ "\nчто будет круто справить туда свою нужду, но вы не учел того факта,\nчто это освященный колодец.");
 		}});
 		
 		damageEvents.put("Упало дерево", new EventInterface() {
@@ -174,18 +271,20 @@ public class Config {
 			public String execute(Player p) {
 				if(p.type == "Жрец") {
 					p.minDMG = p.maxDMG-1;
-					return "Боги Благоденствия приняли твою жертву и даровали атаковать почти на максимум. Твой урон стал "+p.minDMG+"-"+p.maxDMG;
+					return damageDescriptions.get("Колодец").get("description")+"\nБоги Благоденствия приняли твою жертву и даровали возможность атаковать почти на максимум. Твой урон стал "+p.minDMG+"-"+p.maxDMG;
 				}else {
 					p.hp -= Integer.parseInt(damageDescriptions.get("Колодец").get("damage"));
-					return damageDescriptions.get("Колодец").get("description");
+					return damageDescriptions.get("Колодец").get("description")+"Вы получили божественную кару на 3 урона";
 				}
 			}
 		});
 		
+		freeLocationDescriptions.put("Лагерь", "Ты попал в тихий разбойнический лагерь. В нем еще тлеют угольки, видимо что-то их испугало...");
+		
 		freeLocationsEvents.put("Лагерь", new EventInterface() {
 			@Override
 			public String execute(Player p) {
-				return "Ты попал в тихий разбойнический лагерь. В нем еще тлеют угольки, видимо что-то их испугало...";
+				return freeLocationDescriptions.get("Лагерь");
 			}
 			
 		});

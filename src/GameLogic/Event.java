@@ -9,29 +9,32 @@ public class Event {
 	
 	private EventInterface eventInterface;
 	
-	private int type = 0;
+	private int eventType = 0;
 	private Enemy enemy = null;
 	private Hedgehog ezh = null;
 	private int damageHeal = 0;
+	private String type = null;
 	private String eventDescription = null;
 	private String locationDescription = null;
 	
-	Event(int type, EventInterface ei){
+	Event(int eventType, EventInterface ei, String description, String type){
+		setEventType(eventType);
 		setType(type);
+		setEventDescription(description);
 		setEventInterface(ei);
 	}
 	Event(int type, Enemy e, Hedgehog ezh){
-		setType(type);
+		setEventType(type);
 		setEnemy(e);
 		if(e.type == "Острый еж") setEzh(ezh);
 	}
 
-	public int getType() {
-		return type;
+	public int getEventType() {
+		return eventType;
 	}
 
-	public void setType(int type) {
-		this.type = type;
+	public void setEventType(int type) {
+		this.eventType = type;
 	}
 
 	public Enemy getEnemy() {
@@ -80,5 +83,11 @@ public class Event {
 
 	public void setEventInterface(EventInterface eventInterface) {
 		this.eventInterface = eventInterface;
+	}
+	public String getType() {
+		return type;
+	}
+	public void setType(String type) {
+		this.type = type;
 	}
 }

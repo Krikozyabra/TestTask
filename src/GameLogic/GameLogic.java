@@ -83,66 +83,27 @@ public class GameLogic {
 						+ "2-Посмотреть статы\n"
 						+ "3-Захилиться (%d осталось)\n",player.getPosition(), player.healAmount);
 				byte answer = scan.nextByte();
+				turn:
 				switch(answer) {
 				case 1:{
 					int turn = rnd.nextInt(6)+1;
 					System.out.println("На кубике выпало - "+turn);
+					e = eventCont.randomEvent();
 					if(player.type == "Жрец") {
-						e = eventCont.randomEvent();
-						String type = "";
-						switch(e.getType()) {
-							case Event.ENEMY:{
-								type = "враг - "+e.getEnemy().type;
-								break;
-							}
-							case Event.RANDOM_DAMAGE:{
-								type = "получение урона";
-								break;
-							}
-							case Event.FREE_LOCATION:{
-								type = "свободная локация для прогулок";
-								break;
-							}
-							case Event.RANDOM_HEAL:{
-								type = "восстановление хп";
-								break;
-							}
-						}
-						System.out.println("Бог даровал жрецу возможность видеть, что на следующей клетке"
-								+ "\nОн говорит, что на следующей клетке будет "+Config.ANSI_YELLOW+type+Config.ANSI_RESET
-								+ "\nВы сходите(1) или попытаться избежать(2)?");
-						answer = scan.nextByte();
-						if(answer == 1) {
-							player.addPosition(turn);
+						if(!cfg.priestSpells.passive(e, player, turn)) {
 							if(!playEvent(e)) break life_cycle;
-						}else if(answer == 2) {
-							int chance = rnd.nextInt(100)+1;
-							if(chance <= player.runAwayChance) {
-								player.addPosition(turn+1);
-								System.out.format("Вы смогли обойти надвигающуюся клетку и переместились на %d и оказались на клетке №%d\n",turn,player.getPosition());
-							}else {
-								System.out.println("Боги к вам не благосклонны и не дали миновать предопределленых событий");
-								player.addPosition(turn);
-								if(!playEvent(e)) break life_cycle;
-							}
-						}else {
-							System.out.println("Такой команды не предусмотренно.");
 						}
+						break turn;
 					}else if(player.type == "Варвар"){
-						int turn2 = rnd.nextInt(6)+1;
-						turn2 = turn > turn2 ? turn : turn2;
-						System.out.format("Варвара часто преследуют умные мысли и иногда они его догонят."
-								+ "\nЭтот случай стал тем самым исключением и он перекинул кубик,"
-								+ "\nчтобы сходить на самое большое количество шагов - %d\n", turn2);
-						player.addPosition(turn2);
-						System.out.format("Вы переместились на %d и оказались на клетке №%d\n",turn2,player.getPosition());
-						if(!playEvent(eventCont.randomEvent())) break life_cycle;
+						cfg.barbarianSpells.passive(player, turn);
+						if(!playEvent(e)) break life_cycle;
+						break turn;
 					}else {
 						player.addPosition(turn);
-						System.out.format("Вы переместились на %d и оказались на клетеке №%d\n",turn,player.getPosition());
-						if(!playEvent(eventCont.randomEvent())) break life_cycle;
+						System.out.format("Вы переместились на %d клеток и оказались на клетке %d\n",turn, player.getPosition());
+						if(!playEvent(e)) break life_cycle;
+						break turn;
 					}
-					break;
 				}
 				case 2:{
 					System.out.println(Config.ANSI_GREEN+player.showStats()+Config.ANSI_RESET);
@@ -166,7 +127,7 @@ public class GameLogic {
 
 	private boolean playEvent(Event e) {
 		// TODO Auto-generated method stub
-		if(e.getType() == Event.ENEMY) {
+		if(e.getEventType() == Event.ENEMY) {
 			System.out.println("О нет! На вас напал(а) - "+e.getEnemy().type);
 			System.out.println("Его(ё) статы:" +Config.ANSI_RED+ e.getEnemy().getStats()+Config.ANSI_RESET);
 			player.setFightingStatus(true);
@@ -185,9 +146,13 @@ public class GameLogic {
 							if(e.getEzh().contrattack()) {
 								player.hp -= damage;
 								System.out.println("Поздравляю вы напоролись на иголки острого ежа. Весь урон был возвращен вам с полна. Урон = "+damage);
-								if(player.hp <= 0) break;
+								if(player.type == "Паладин") {
+									if(!cfg.paladinSpells.passive(player)) break;
+								}else {
+									break;
+								}
 							}else {
-								System.out.println("Вы смогли маневрировать между иголками и ватщили этому ежу");
+								System.out.println("Вы смогли маневрировать между иголками и втащили этому ежу");
 								System.out.format("Вы смогли пробить %s и нанесли %d урона!\n",e.getEnemy().type,damage);
 								e.getEnemy().hp -= damage;
 								if(e.getEnemy().hp <= 0) {
@@ -220,36 +185,57 @@ public class GameLogic {
 							System.out.format("%s смог(ла) пробить вас и нанес(ла) %d урона!\n",e.getEnemy().type,damage);
 							player.hp -= damage;
 							System.out.format("У вас осталось %d из %d хп\n",player.hp,player.maxHP);
-							if(player.hp <= 0) break;
+							if(player.hp <= 0) {
+								if(player.type == "Паладин") {
+									if(!cfg.paladinSpells.passive(player)) break;
+								}else {
+									break;
+								}
+							}
 						}else {
 							System.out.format("%s не смог(ла) попасть по вам\n",e.getEnemy().type);
 						}
 					}
 				}else if(answer == 2) { //Attempting to run away
 					if(e.getEnemy().type != "Острый еж") {
-					if((rnd.nextInt(100)+1)<=player.runAwayChance) {
-						System.out.format("А вы круты! Поступили по мужски и сбежали\n");
-						player.setFightingStatus(false);
-					}else {
-						System.out.println("Вас поймали на попытке сбежать, поэтому получаете по заслугам");
-						int damage = rnd.nextInt(e.getEnemy().maxDMG)+e.getEnemy().minDMG;
-						player.hp -= damage;
-						System.out.println("Вы получили - "+damage+" урона");
-						if(player.hp <= 0) break;
-					}
+						if(player.type == "Паладин") {
+							System.out.println("Вы воин света, а воинам света не ведан страх.");
+						}else {
+							if((rnd.nextInt(100)+1)<=player.runAwayChance) {
+								System.out.format("А вы круты! Поступили по мужски и сбежали\n");
+								player.setFightingStatus(false);
+							}else {
+								System.out.println("Вас поймали на попытке сбежать, поэтому получаете по заслугам");
+								int damage = rnd.nextInt(e.getEnemy().maxDMG)+e.getEnemy().minDMG;
+								player.hp -= damage;
+								System.out.println("Вы получили - "+damage+" урона");
+								if(player.hp <= 0) {
+									if(player.type == "Паладин") {
+										if(!cfg.paladinSpells.passive(player)) break;
+									}else {
+										break;
+									}
+								}
+							}
+						}
 					}else {
 						System.out.println("Вы зациклены в пространстве у вас нет другого выхода...");
 					}
 				}else if(answer == 3) {
 					if(e.getEnemy().type == "Острый еж") {
 						System.out.println("Ай-ай-ай! На глазах бедного ежа вы кушаете восстанавливающий хлебец.\nКак вам не стыдно!");
-						if(player.hp <= 0) break;
 					}else {
 						int damage = e.getEnemy().attack(player.protection);
 						System.out.println(player.heal());
 						System.out.format("%s вас попытался(сь) поймать на ошибке и нанес(ла) - %d урона\n",e.getEnemy().type, damage);
 						player.hp -= damage;
-						if(player.hp <= 0) break;
+						if(player.hp <= 0) {
+							if(player.type == "Паладин") {
+								if(!cfg.paladinSpells.passive(player)) break;
+							}else {
+								break;
+							}
+						}
 					}
 				}else if(answer == 4){
 					System.out.println(Config.ANSI_GREEN+player.showStats()+Config.ANSI_RESET);
@@ -259,6 +245,7 @@ public class GameLogic {
 			}
 			}else{
 				System.out.println(e.getEventInterface().execute(player));
+				if(player.hp <= 0 && player.type == "Паладин") cfg.paladinSpells.passive(player);
 				if(player.hp > player.maxHP) player.hp = player.maxHP;
 			}
 		if(player.isAlive()) return true;
