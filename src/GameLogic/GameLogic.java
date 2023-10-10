@@ -152,10 +152,12 @@ public class GameLogic {
 							if(e.getEzh().contrattack()) {
 								player.hp -= damage;
 								System.out.println("Поздравляю вы напоролись на иголки острого ежа. Весь урон был возвращен вам с полна. Урон = "+damage);
-								if(player.type == "Паладин") {
-									if(!cfg.paladinSpells.passive(player)) break;
-								}else {
-									break;
+								if(player.hp <= 0) {
+									if(player.type == "Паладин") {
+										if(!cfg.paladinSpells.passive(player)) break;
+									}else {
+										break;
+									}
 								}
 							}else {
 								System.out.println("Вы смогли маневрировать между иголками и втащили этому ежу");
@@ -181,6 +183,9 @@ public class GameLogic {
 							e.getEnemy().hp -= damage;
 							if(e.getEnemy().hp <= 0) {
 								System.out.println("Вы победили своего врага! Поздравляем!");
+								int gold = rnd.nextInt(e.getEnemy().maxGold-e.getEnemy().minGold)+e.getEnemy().minGold;
+								System.out.format("Вам выпало %d золота", gold);
+								player.amountGold+=gold;
 								e.getEnemy().died();
 								player.setFightingStatus(false);
 								break;
