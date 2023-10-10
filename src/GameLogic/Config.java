@@ -180,23 +180,23 @@ public class Config {
 						+ "\nВы сходите(1) или попытаетесь избежать(2)?");
 				while(true) {
 				byte answer = scan.nextByte();
-				if(answer == 1) {
-					player.addPosition(turn);
-					return false;
-				}else if(answer == 2) {
-					int chance = rnd.nextInt(100)+1;
-					if(chance <= player.runAwayChance) {
-						player.addPosition(turn+1);
-						System.out.format("Вы смогли обойти надвигающуюся клетку и переместились на %d и оказались на клетке №%d\n",turn,player.getPosition());
-						return true;
-					}else {
-						System.out.println("Боги к вам не благосклонны и не дали миновать предопределленых событий");
+					if(answer == 1) {
 						player.addPosition(turn);
 						return false;
+					}else if(answer == 2) {
+						int chance = rnd.nextInt(100)+1;
+						if(chance <= player.runAwayChance) {
+							player.addPosition(turn+1);
+							System.out.format("Вы смогли обойти надвигающуюся клетку и переместились на %d и оказались на клетке №%d\n",turn+1,player.getPosition());
+							return true;
+						}else {
+							System.out.println("Боги к вам не благосклонны и не дали миновать предопределленых событий");
+							player.addPosition(turn);
+							return false;
+						}
+					}else {
+						System.out.println("Такой команды не предусмотренно.");
 					}
-				}else {
-					System.out.println("Такой команды не предусмотренно.");
-				}
 				}
 			}
 		};
