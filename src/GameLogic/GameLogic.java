@@ -98,8 +98,8 @@ public class GameLogic {
 					System.out.println("На кубике выпало - "+turn);
 					e = eventCont.randomEvent();
 					if(player.type == "Жрец") {
-						if(!cfg.priestSpells.passive(e, player, turn)) {
-							if(!playEvent(e)) break life_cycle;
+						if(cfg.priestSpells.passive(e, player, turn)) {
+							continue life_cycle;
 						}
 					}else if(player.type == "Варвар"){
 						cfg.barbarianSpells.passive(player, turn);
@@ -107,7 +107,8 @@ public class GameLogic {
 						player.addPosition(turn);
 						System.out.format("Вы переместились на %d клеток и оказались на клетке %d\n",turn, player.getPosition());
 					}
-					if(player.type != "Жрец") if(!playEvent(e)) break life_cycle;
+					System.out.println("------------------------------------------------------------------------------------------------------------");
+					if(!playEvent(e)) break life_cycle;
 					break turn;
 				}
 				case 2:{
@@ -152,6 +153,7 @@ public class GameLogic {
 							if(e.getEzh().contrattack()) {
 								player.hp -= damage;
 								System.out.println("Поздравляю вы напоролись на иголки острого ежа. Весь урон был возвращен вам с полна. Урон = "+damage);
+								System.out.println("У вас осталось хп: "+player.hp+"-"+player.maxHP);
 								if(player.hp <= 0) {
 									if(player.type == "Паладин") {
 										if(!cfg.paladinSpells.passive(player)) break;
@@ -237,7 +239,8 @@ public class GameLogic {
 					}
 				}else if(answer == 3) {
 					if(e.getEnemy().type == "Острый еж") {
-						System.out.println("Ай-ай-ай! На глазах бедного ежа вы кушаете восстанавливающий хлебец.\nКак вам не стыдно!");
+						System.out.println("Ай-ай-ай! На глазах бедного ежа вы пытаетесь скушать восстанавливающий хлебец.\nКак вам не стыдно!");
+						System.out.println(player.heal());
 					}else {
 						int damage = e.getEnemy().attack(player.protection);
 						System.out.println(player.heal());

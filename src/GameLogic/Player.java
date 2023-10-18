@@ -30,6 +30,7 @@ public class Player extends Entity{
 		// TODO Auto-generated method stub
 		GameLogic gl = new GameLogic();
 		System.out.println("К сожалению вы умерли :(");
+		System.out.format("Вы смогли добраться лишь до %d клетки\n", this.positionOnDesk);
 		gl.gameStart();
 	}
 

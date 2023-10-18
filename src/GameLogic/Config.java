@@ -239,7 +239,11 @@ public class Config {
 					break;
 				}
 				case Event.RANDOM_HEAL: {
-					type = "восстановление хп";
+					if(e.getType() == "Подушка") {
+						type = "дебафф";
+					}else {
+						type = "восстановление хп";
+					}
 					break;
 				}
 				}
