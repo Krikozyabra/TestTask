@@ -39,22 +39,27 @@ public class GameLogic {
 				className = cfg.playerTypes[input-5];
 				System.out.println("Вы уверены, что хотите выбрать класс - "+className);
 				System.out.println("1-Да, 2-Нет, 3-Посмотреть историю");
-				input = scan.nextByte();
-				if(input==1) {
-					try {
-						player.setType(className);
-					}catch(Exception e) {
-						System.out.println("Некоторые стартовые параметры класса вышли из диапазона");
-						quitGame();
+				while(true) {
+					input = scan.nextByte();
+					if(input==1) {
+						try {
+							player.setType(className);
+						}catch(Exception e) {
+							System.out.println("Некоторые стартовые параметры класса вышли из диапазона");
+							quitGame();
+						}
+						System.out.println("Вы выбрали класс - "+className);
+						System.out.println("Вы можете выиграть 2 способами:"
+								+ "\n1) Дойти до клетки №1000"
+								+ "\n2) Сыграть в ящик");
+						break choosing;
+					}else if(input==3) {
+						System.out.println("------------------------------------------------------------------------------------------------------------");
+						System.out.println(cfg.playerDescriptions.get(className));
+						
+					}else if(input==2) {
+						break;
 					}
-					System.out.println("Вы выбрали класс - "+className);
-					System.out.println("Вы можете выиграть 2 способами:"
-							+ "\n1) Дойти до клетки №1000"
-							+ "\n2) Сыграть в ящик");
-					break choosing;
-				}else if(input==3) {
-					System.out.println("------------------------------------------------------------------------------------------------------------");
-					System.out.println(cfg.playerDescriptions.get(className));
 				}
 			}else if(input>10){
 				System.out.println("Такой команды не предусмотрено");
@@ -84,7 +89,8 @@ public class GameLogic {
 				System.out.format("Вы находитесь на %d клетке. Ваш следующий ход?\n"
 						+ "1-Кинуть кубик или сходить\n"
 						+ "2-Посмотреть статы\n"
-						+ "3-Захилиться (%d осталось)\n",player.getPosition(), player.healAmount);
+						+ "3-Захилиться (%d осталось)\n"
+						+ "4-Посмотреть инвентарь\n",player.getPosition(), player.healAmount);
 				byte answer = scan.nextByte();
 				turn:
 				switch(answer) {
@@ -117,6 +123,10 @@ public class GameLogic {
 				}
 				case 3:{
 					System.out.println(player.heal());	
+					break;
+				}
+				case 4:{
+					player.showInventory();
 					break;
 				}
 				default:{

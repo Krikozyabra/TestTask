@@ -19,12 +19,15 @@ public class Player extends Entity{
 	int predictionChance = 100;
 	int turn=0;
 	String type;
+	HashMap<String, Integer> inventory = new HashMap<>();
 	
 	private int positionOnDesk = 0;
 	private boolean isFighting = false;
 
 	public boolean buff =false;
-
+	Player(){
+		inventory.put("Иголки", 3);
+	}
 	@Override
 	void died() {
 		// TODO Auto-generated method stub
@@ -112,7 +115,20 @@ public class Player extends Entity{
 				+ "\nЗолото = %d"
 				,this.hp,this.maxHP,this.minDMG,this.maxDMG,this.protection,this.attack, this.amountGold);
 	}
-
+	public void showInventory() {
+		System.out.println("------------------------------------------------------------------------------------------------------------");
+		System.out.println("Ваш инвентарь:");
+		for(String x: inventory.keySet()) {
+			System.out.println(x+": "+inventory.get(x).toString());
+		}
+	}
+	public void putInInventory(String item, int amount) {
+		this.inventory.put(item, amount);
+		System.out.println("Вам добавлен "+item+" в размере "+amount+"штук(и)");
+	}
+	public void removeFromInventory(String item, int amount) {
+		this.inventory.replace(item, this.inventory.get(item), this.inventory.get(item)-amount);
+	}
 	public void win() {
 		// TODO Auto-generated method stub
 		System.out.println("Вы дошли до 100 клетки! Поздравляю!");
