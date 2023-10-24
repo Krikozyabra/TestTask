@@ -23,6 +23,7 @@ public class Event {
 		setEventDescription(description);
 		setEventInterface(ei);
 	}
+	
 	Event(int type, Enemy e, Hedgehog ezh){
 		setEventType(type);
 		setEnemy(e);

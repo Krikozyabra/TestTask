@@ -23,9 +23,20 @@ public class Enemy extends Entity{
 	}
 	
 	@Override
-	void died() {
+	void died(Player p) {
 		// TODO Auto-generated method stub
-		
+		Random rnd = new Random();
+		if(this.type == "Острый еж") {
+			int drop = rnd.nextInt(100)+1;
+			if(drop <= 20) {
+				drop = rnd.nextInt(1)+1;
+				System.out.println("------------------------------------------------------------------------------------------------------------");
+				System.out.println("Вам выпало: "+drop+" иголок(а)");
+				p.putInInventory("Иголки", drop);
+			}else {
+				System.out.println("Грустный тромбон... Вам ничего не выпало");
+			}
+		}
 	}
 
 	@Override
@@ -68,5 +79,4 @@ public class Enemy extends Entity{
 				+ "\n Защита = "+this.protection
 				+ "\n Золото = "+this.minGold+"-"+this.maxGold;
 	}
-
 }

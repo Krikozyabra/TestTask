@@ -3,8 +3,9 @@ package GameLogic;
 import java.util.Formatter;
 import java.util.HashMap;
 import java.util.Random;
+import java.util.Scanner;
 
-public class Player extends Entity{
+public class Player{
 	Config cfg = new Config();
 	
 	int minDMG, maxDMG;
@@ -25,10 +26,11 @@ public class Player extends Entity{
 	private boolean isFighting = false;
 
 	public boolean buff =false;
+	
 	Player(){
-		inventory.put("Иголки", 3);
+		putInInventory("Иголки",3);
 	}
-	@Override
+	
 	void died() {
 		// TODO Auto-generated method stub
 		GameLogic gl = new GameLogic();
@@ -37,7 +39,7 @@ public class Player extends Entity{
 		gl.gameStart();
 	}
 
-	@Override
+	
 	int attack(int enemyProtection) {
 		byte modificator = (byte)(enemyProtection - this.attack+1);
 		if(modificator<=0) modificator = 1;
@@ -62,7 +64,7 @@ public class Player extends Entity{
 		}
 	}
 
-	@Override
+	
 	void setType(String typeName) throws Exception {
 		HashMap<String, Integer> stats = cfg.playerStats.get(typeName);
 		this.type = typeName;
@@ -118,8 +120,12 @@ public class Player extends Entity{
 	public void showInventory() {
 		System.out.println("------------------------------------------------------------------------------------------------------------");
 		System.out.println("Ваш инвентарь:");
-		for(String x: inventory.keySet()) {
-			System.out.println(x+": "+inventory.get(x).toString());
+		if(this.inventory.isEmpty()) {
+			System.out.println("ПУСТОЙ :)");
+			return;
+		}
+		for(String x: this.inventory.keySet()) {
+			System.out.println(x+": "+this.inventory.get(x).toString());
 		}
 	}
 	public void putInInventory(String item, int amount) {
@@ -133,4 +139,5 @@ public class Player extends Entity{
 		// TODO Auto-generated method stub
 		System.out.println("Вы дошли до 100 клетки! Поздравляю!");
 	}
+
 }

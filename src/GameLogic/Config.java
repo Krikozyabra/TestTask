@@ -46,6 +46,10 @@ public class Config {
 	String[] healTypes = { "Костер", "Подушка" };
 	HashMap<String, HashMap<String, String>> healDescriptions = new HashMap<>();
 	HashMap<String, EventInterface> healEvents = new HashMap<>();
+	
+	String[] crafts = {"Игольная корона"};
+	HashMap<String, HashMap<String, String>> craftsDescriptions = new HashMap<>();
+	HashMap<String, CraftInterface> craftsEvent = new HashMap<>();
 
 	Config() {
 		// Setting descriptions for classes
@@ -571,6 +575,22 @@ public class Config {
 				}
 				p.hp += Integer.parseInt(healDescriptions.get("Подушка").get("heal"));
 				return healDescriptions.get("Подушка").get("description");
+			}
+			
+	
+		});
+		
+		craftsDescriptions.put("Игольная корона", new HashMap<String, String>(){
+			{
+				put("Иголки","3");
+				put("description", "Ваш максимальны и минимальный урон увеличиться на 1 за счёт острой короны и тупой как камень бошки");
+			}
+		});
+		craftsEvent.put("Игольная корона", new CraftInterface() {
+			@Override
+			public void crafted(Player player) {
+				player.minDMG += 1;
+				player.maxDMG += 1;
 			}
 		});
 	}

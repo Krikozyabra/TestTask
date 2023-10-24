@@ -90,7 +90,8 @@ public class GameLogic {
 						+ "1-Кинуть кубик или сходить\n"
 						+ "2-Посмотреть статы\n"
 						+ "3-Захилиться (%d осталось)\n"
-						+ "4-Посмотреть инвентарь\n",player.getPosition(), player.healAmount);
+						+ "4-Посмотреть инвентарь\n"
+						+ "5-Крафт\n",player.getPosition(), player.healAmount);
 				byte answer = scan.nextByte();
 				turn:
 				switch(answer) {
@@ -127,6 +128,10 @@ public class GameLogic {
 				}
 				case 4:{
 					player.showInventory();
+					break;
+				}
+				case 5:{
+					craft();
 					break;
 				}
 				default:{
@@ -180,7 +185,7 @@ public class GameLogic {
 									int gold = rnd.nextInt(e.getEnemy().maxGold-e.getEnemy().minGold)+e.getEnemy().minGold;
 									System.out.format("Вам выпало %d золота\n", gold);
 									player.amountGold+=gold;
-									e.getEnemy().died();
+									e.getEnemy().died(player);
 									player.setFightingStatus(false);
 									break;
 								}
@@ -198,7 +203,7 @@ public class GameLogic {
 								int gold = rnd.nextInt(e.getEnemy().maxGold-e.getEnemy().minGold)+e.getEnemy().minGold;
 								System.out.format("Вам выпало %d золота\n", gold);
 								player.amountGold+=gold;
-								e.getEnemy().died();
+								e.getEnemy().died(player);
 								player.setFightingStatus(false);
 								break;
 							}
@@ -280,5 +285,74 @@ public class GameLogic {
 			}
 		if(player.isAlive()) return true;
 		else return false;
+	}
+	
+	public void craft() {
+		Scanner scn = new Scanner(System.in);
+		craft_cycle:
+		while(true) {
+			for(String craft: cfg.crafts) {
+				while(true) {
+					System.out.println("------------------------------------------------------------------------------------------------------------");
+					System.out.println(craft);
+					System.out.println("1-Скрафтить\n"
+							+ "2-Посмотреть описание\n"
+							+ "3-Следующий артефакт\n"
+							+ "4-Выйти");
+					int ans = scn.nextInt();
+					if(ans == 1) {
+						if(isCraftable(craft)) {
+							for(String item: cfg.craftsDescriptions.get(craft).keySet()) {
+								if(!item.equals("description")) {
+									player.removeFromInventory(item, Integer.parseInt(cfg.craftsDescriptions.get(craft).get(item)));
+								}
+							}
+							cfg.craftsEvent.get(craft).crafted(player);
+							System.out.println("Вы успешно соорудили себе: "+craft);
+							break craft_cycle;
+						}else {
+							System.out.println("К сожалению у вас не достаточно материалов");
+						}
+					}else if(ans == 2) {
+						System.out.println("------------------------------------------------------------------------------------------------------------");
+						System.out.println("Состоит из:");
+						for(String item: cfg.craftsDescriptions.get(craft).keySet()) {
+							if(!item.equals("description")) {
+								System.out.println(item+" - "+cfg.craftsDescriptions.get(craft).get(item));
+							}
+						}
+						System.out.println(cfg.craftsDescriptions.get(craft).get("description"));
+					}else if(ans == 3) {
+						break;
+					}else if(ans == 4) {
+						break craft_cycle;
+					}else {
+						System.out.println("Боги не дошли до подобных сигналов");
+					}
+				}
+			}
 		}
 	}
+	
+	public boolean isCraftable(String craft) {
+		int keys = cfg.craftsDescriptions.get(craft).keySet().size()-1;
+		for(String key: cfg.craftsDescriptions.get(craft).keySet()) {
+			if(!key.equals("description")) {
+				if(player.inventory.containsKey(key)) {
+					if(player.inventory.get(key) == Integer.parseInt(cfg.craftsDescriptions.get(craft).get(key))) {
+						keys--;
+					}
+				}
+			}
+		}
+		if(keys == 0) {
+			return true;
+		}else {
+			return false;
+		}
+	}
+}
+
+
+
+
